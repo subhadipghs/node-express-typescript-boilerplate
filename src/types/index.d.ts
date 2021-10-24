@@ -8,8 +8,8 @@ export declare namespace RestApplication {
 
   export interface App {
     config: AppConfig;
-    app: Application | null;
-    server: Server | null;
+    app: Application;
+    server: Server;
     container: Container;
 
     boot: () => Promise<void>;

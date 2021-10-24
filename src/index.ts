@@ -1,13 +1,10 @@
 import { asyncModule, container } from "./container";
-import { Container } from "inversify";
-import { env } from "process";
 import { App } from "./app";
 import { RestApplication } from "./types";
+import { AppEnv } from "./configs/environment.config";
 
-export async function main(
-  container: Container,
-  options: RestApplication.AppConfig
-) {
+export async function main(options: RestApplication.AppConfig) {
+  await container.loadAsync(asyncModule);
   const app = new App(container, options);
   await app.boot();
   await app.start();
@@ -19,7 +16,7 @@ export async function main(
 
 if (require.main === module) {
   const options: RestApplication.AppConfig = {
-    port: +(env.PORT ?? 3000),
+    port: +(AppEnv.getPort() ?? 3000),
     host: "127.0.0.1",
     gracefulShutdownPeriod: 4000,
     openApi: {
@@ -29,10 +26,8 @@ if (require.main === module) {
     },
   };
 
-  container.loadAsync(asyncModule).then(() => {
-    main(container, options).catch((error: Error) => {
-      console.error(`Caught error starting the app. Reason: ${error.message}`);
-      console.error(error.stack);
-    });
+  main(options).catch((error: Error) => {
+    console.error(`Caught error starting the app. Reason: ${error.message}`);
+    console.error(error.stack);
   });
 }

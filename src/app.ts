@@ -1,28 +1,26 @@
-import "reflect-metadata";
-
-import { env } from "process";
 import { AddressInfo } from "net";
 import Http, { Server } from "http";
 import express, { Application } from "express";
 import { Container } from "inversify";
 import { RestApplication } from "./types";
-import { InversifyExpressServer } from "inversify-express-utils";
+import { InversifyExpressServer as ExpressApp } from "inversify-express-utils";
 import * as swagger from "swagger-express-ts";
-import bodyParser from "body-parser";
+import { AppEnv } from "./configs/environment.config";
 
 export class App implements RestApplication.App {
   container: Container;
   config: RestApplication.AppConfig;
   app: Application;
   server: Server;
+
   constructor(container: Container, config: RestApplication.AppConfig) {
     this.config = config;
     this.container = container;
-    this.app = new InversifyExpressServer(container)
+    this.app = new ExpressApp(container)
       .setConfig((app) => {
-        app.use(bodyParser.json());
+        app.use(express.json());
         app.use(
-          bodyParser.urlencoded({
+          express.urlencoded({
             extended: true,
           })
         );
@@ -40,7 +38,7 @@ export class App implements RestApplication.App {
   }
 
   public getProtocol() {
-    return env.NODE_ENV !== "production" ? "http" : "https";
+    return AppEnv.getEnv() !== "production" ? "http" : "https";
   }
 
   public getUrl(): string {

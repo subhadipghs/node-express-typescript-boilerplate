@@ -11,11 +11,13 @@ import { createPgConnection } from "./connection";
 const asyncModule = new AsyncContainerModule(async (bind) => {
   const connection = await createPgConnection();
 
+  // Bind the repositories here
   bind<Repository<User>>(User.name)
     .toDynamicValue(() => {
       return getRepository(User, connection.name);
     })
     .inRequestScope();
+
   // Bind the services here
   bind<UserService>(UserService.name).to(UserService).inSingletonScope();
   bind<PingService>(PingService.name).to(PingService).inSingletonScope();
