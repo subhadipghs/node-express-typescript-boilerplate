@@ -1,10 +1,5 @@
 import { inject } from "inversify";
-import {
-  controller,
-  httpGet,
-  request,
-  response,
-} from "inversify-express-utils";
+import { controller, httpGet } from "inversify-express-utils";
 import { PingService } from "../services/ping.services";
 import { PingControllerInterface } from "interfaces/controllers/ping.controller.interface";
 import {
@@ -22,11 +17,7 @@ import {
 })
 @controller("/ping")
 export class PingController implements PingControllerInterface {
-  public static TARGET_NAME: string = "PingController";
-
-  constructor(
-    @inject(PingService.TARGET_NAME) private pingService: PingService
-  ) {}
+  constructor(@inject(PingService.name) private pingService: PingService) {}
 
   @httpGet("/")
   @ApiOperationGet({

@@ -1,7 +1,6 @@
 import { User } from "../entities/user.entity";
 import { inject, injectable } from "inversify";
 import { Repository } from "typeorm";
-import { provide } from "inversify-binding-decorators";
 
 @injectable()
 export class UserService {

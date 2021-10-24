@@ -1,9 +1,14 @@
+import { asyncModule, container } from "./container";
+import { Container } from "inversify";
 import { env } from "process";
 import { App } from "./app";
 import { RestApplication } from "./types";
 
-export async function main(options: RestApplication.AppConfig) {
-  const app = new App(options);
+export async function main(
+  container: Container,
+  options: RestApplication.AppConfig
+) {
+  const app = new App(container, options);
   await app.boot();
   await app.start();
 
@@ -17,10 +22,17 @@ if (require.main === module) {
     port: +(env.PORT ?? 3000),
     host: "127.0.0.1",
     gracefulShutdownPeriod: 4000,
+    openApi: {
+      version: "1.0.0",
+      title: "sample-api",
+      path: "/api/docs",
+    },
   };
 
-  main(options).catch((error: Error) => {
-    console.error(`Caught error starting the app. Reason: ${error.message}`);
-    console.error(error.stack);
+  container.loadAsync(asyncModule).then(() => {
+    main(container, options).catch((error: Error) => {
+      console.error(`Caught error starting the app. Reason: ${error.message}`);
+      console.error(error.stack);
+    });
   });
 }

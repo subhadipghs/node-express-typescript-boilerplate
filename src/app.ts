@@ -8,19 +8,27 @@ import { Container } from "inversify";
 import { RestApplication } from "./types";
 import { InversifyExpressServer } from "inversify-express-utils";
 import * as swagger from "swagger-express-ts";
-import { asyncModule, container } from "./container";
 import bodyParser from "body-parser";
 
 export class App implements RestApplication.App {
   container: Container;
   config: RestApplication.AppConfig;
-  app: null | Application;
-  server: null | Server;
-  constructor(config: RestApplication.AppConfig) {
+  app: Application;
+  server: Server;
+  constructor(container: Container, config: RestApplication.AppConfig) {
     this.config = config;
     this.container = container;
-    this.app = null;
-    this.server = null;
+    this.app = new InversifyExpressServer(container)
+      .setConfig((app) => {
+        app.use(bodyParser.json());
+        app.use(
+          bodyParser.urlencoded({
+            extended: true,
+          })
+        );
+      })
+      .build();
+    this.server = Http.createServer(this.app);
   }
 
   public getPort(): number {
@@ -36,33 +44,16 @@ export class App implements RestApplication.App {
   }
 
   public getUrl(): string {
-    if (this.server) {
-      const addr = this.server.address() as AddressInfo;
-      const url = `${this.getProtocol()}://${addr.address}:${addr.port}`;
-      return url;
-    }
-    return "";
+    const addr = this.server.address() as AddressInfo;
+    const url = `${this.getProtocol()}://${addr.address}:${addr.port}`;
+    return url;
   }
 
   /**
    * Boot the application with all the necessary modules
    */
   public async boot() {
-    // body parser module
-    await container.loadAsync(asyncModule);
-    let setup = new InversifyExpressServer(this.container);
-    setup.setConfig((app) => {
-      app.use(
-        bodyParser.urlencoded({
-          extended: true,
-        })
-      );
-      app.use(bodyParser.json());
-    });
-    this.app = setup.build();
-    this.server = Http.createServer(this.app);
-    // swagger modules
-    this.app.use("/api-docs/swagger", express.static("swagger"));
+    this.app.use(this.config.openApi.path, express.static("swagger"));
     this.app.use(
       "/api-docs/swagger/assets",
       express.static("node_modules/swagger-ui-dist")
@@ -71,8 +62,8 @@ export class App implements RestApplication.App {
       swagger.express({
         definition: {
           info: {
-            title: "Utility API",
-            version: "1.0.0",
+            title: this.config.openApi.title,
+            version: this.config.openApi.version,
           },
         },
       })

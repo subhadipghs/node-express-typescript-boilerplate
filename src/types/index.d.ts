@@ -24,7 +24,12 @@ export declare namespace RestApplication {
   export interface AppConfig {
     port: number;
     host: string;
-    gracefulShutdownPeriod?: number;
+    gracefulShutdownPeriod: number;
+    openApi: {
+      title: string;
+      path: string;
+      version: string;
+    };
     enableCors?: boolean;
     enableCsrf?: boolean;
     enableXssProtection?: boolean;
