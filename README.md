@@ -92,4 +92,10 @@
    npm run watch
    ```
 
+5. Open terminal and paste the command below
+
+   ```sh
+   curl --request GET --url http://localhost:3000/ping
+   ```
+
 <p align="right">(<a href="#top">back to top</a>)</p>
