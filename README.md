@@ -60,7 +60,7 @@
 
 1. Make sure [Node](https://nodejs.org)(>=v14.18.0) is installed on your system. If you don't have Node installed on your system then download the the Node installer from the above website.
 
-2. Install Yarn[https://yarnpkg.com/] package manager.
+2. Install [Yarn](https://yarnpkg.com) package manager.
 
 ### Installation
 
