@@ -16,3 +16,20 @@ export async function createPgConnection() {
   });
   return connection;
 }
+
+export async function createTestConnection() {
+  const { host, port, database, username, password } = AppEnv.getPostgresEnv();
+  const testConnection: Connection = await createConnection({
+    name: "test",
+    type: "postgres",
+    host,
+    port,
+    database,
+    username,
+    password,
+    entities: [User],
+    synchronize: true,
+    dropSchema: true,
+  });
+  return testConnection;
+}
