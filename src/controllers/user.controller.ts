@@ -10,7 +10,14 @@ import {
   Controller,
 } from "inversify-express-utils";
 import { UserService } from "../services/user.services";
+import {
+  ApiOperationGet,
+  ApiPath,
+  IApiOperationGetArgs,
+} from "swagger-express-ts";
+import { UserApiSpecs } from "../api-specs/user-api-specs";
 
+@ApiPath(UserApiSpecs.getSpecs().getApiPath())
 @controller("/users")
 export class UserController implements Controller {
   constructor(@inject(UserService.name) private userService: UserService) {}
@@ -21,6 +28,7 @@ export class UserController implements Controller {
   }
 
   @httpGet("/")
+  @ApiOperationGet(UserApiSpecs.getSpecs().get())
   async get(@requestParam("id") id: number): Promise<User | undefined> {
     return this.userService.get(id);
   }

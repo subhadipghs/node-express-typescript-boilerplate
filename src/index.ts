@@ -10,6 +10,7 @@ export async function main(options: RestApplication.AppConfig) {
   await app.start();
 
   console.log(`Server is running at ${app.getUrl()}`);
+  console.log(`Api Docs ${app.getUrl()}${app.getApiDocsUrl()}`);
   console.log(`Try ${app.getUrl()}/ping`);
   return app;
 }

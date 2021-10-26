@@ -41,6 +41,10 @@ export class App implements RestApplication.App {
     return AppEnv.getEnv() !== "production" ? "http" : "https";
   }
 
+  public getApiDocsUrl(): string {
+    return this.config.openApi.path;
+  }
+
   public getUrl(): string {
     const addr = this.server.address() as AddressInfo;
     const url = `${this.getProtocol()}://${addr.address}:${addr.port}`;
